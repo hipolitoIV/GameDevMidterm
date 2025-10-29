@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using TMPro;
 
@@ -118,7 +119,7 @@ public class GameManager : MonoBehaviour
         if (levelOver) return;
 
         // Pause input
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        if (Keyboard.current.escapeKey.wasPressedThisFrame|| Keyboard.current.dKey.wasPressedThisFrame)
             TogglePause();
 
         if (Time.timeScale == 0) return; // Paused
@@ -248,7 +249,7 @@ public class GameManager : MonoBehaviour
 
     public void ToggleAudio()
     {
-        AudioListener.volume = (AudioListener.volume == 0 ? 1f : 0f);
+        AudioListener.volume = AudioListener.volume == 0 ? 1f : 0f;
     }
 
     public void QuitToMenu()

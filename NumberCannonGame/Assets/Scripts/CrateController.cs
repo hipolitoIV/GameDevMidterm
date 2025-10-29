@@ -11,12 +11,12 @@ public class CrateController : MonoBehaviour
     public float horizontalSpeed = 3f; // Speed of sine wave
     public float horizontalMagnitude = 0.5f; // Width of sine wave
 
-    private Rigidbody2D rb;
+    private Rigidbody rb;
     private float originalX;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody>();
         originalX = transform.position.x;
         UpdateText();
     }
@@ -32,7 +32,7 @@ public class CrateController : MonoBehaviour
     void FixedUpdate()
     {
         // Basic falling
-        Vector2 velocity = new Vector2(0, -fallSpeed);
+        Vector3 velocity = new Vector3(0, -fallSpeed, 0);
 
         // Bonus: Add sinusoidal (wobble) movement
         float xOffset = Mathf.Sin(Time.time * horizontalSpeed) * horizontalMagnitude;
@@ -70,7 +70,7 @@ public class CrateController : MonoBehaviour
     }
 
     // This handles hitting the bottom of the screen
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("BottomBoundary"))
         {

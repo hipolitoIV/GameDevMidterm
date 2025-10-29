@@ -1,27 +1,31 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
     public GameObject bulletPrefab;
-    public Transform firePoint; // An empty GameObject at the cannon's nozzle
+    public Transform firePoint;
+    public Camera cam;
 
     void Update()
     {
-        // 1. Cannon Rotation
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
-        transform.up = direction;
+        // --- 1. Aiming ---
+        Vector2 mousePos = Mouse.current.position.ReadValue();
+        Vector3 cannonScreenPos = cam.WorldToScreenPoint(transform.position);
+        Vector2 direction = mousePos - new Vector2(cannonScreenPos.x, cannonScreenPos.y);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f); // rotate only Z axis
 
-        // 2. Shooting
-        if (Input.GetKeyDown(KeyCode.S))
+        // --- 2. Shooting ---
+        if (Keyboard.current.sKey.wasPressedThisFrame)
         {
             Shoot(1);
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Keyboard.current.dKey.wasPressedThisFrame)
         {
             Shoot(2);
         }
-        else if (Input.GetKeyDown(KeyCode.F))
+        else if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             Shoot(3);
         }
@@ -29,14 +33,17 @@ public class PlayerController : MonoBehaviour
 
     void Shoot(int value)
     {
-        // Check with GameManager if we have ammo
+        // Log the shoot event
+        Debug.Log($"Shoot triggered with value {value} at time {Time.time:F2}");
+
+        // Check ammo
         if (GameManager.instance == null || !GameManager.instance.HasAmmo(value))
         {
-            // Optionally play an "empty clip" sound
+            Debug.LogWarning("Attempted to shoot but no ammo!");
             return;
         }
 
-        // We have ammo, so use it and fire
+        // Consume ammo and fire
         GameManager.instance.UseBullet(value);
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         bullet.GetComponent<BulletController>().Initialize(value);
