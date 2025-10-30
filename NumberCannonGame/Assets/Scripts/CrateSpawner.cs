@@ -21,8 +21,8 @@ public class CrateSpawner : MonoBehaviour
         // Calculate screen boundaries
         Vector3 leftEdge = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
         Vector3 rightEdge = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0));
-        minX = leftEdge.x + 1f; // Add 1f buffer
-        maxX = rightEdge.x - 1f; // Add 1f buffer
+        minX = leftEdge.x + 10f; // Add 10f buffer
+        maxX = rightEdge.x - 10f; // Add 10f buffer
     }
 
     /// <summary>

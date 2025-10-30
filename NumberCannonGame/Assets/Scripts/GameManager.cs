@@ -60,18 +60,18 @@ public class GameManager : MonoBehaviour
         score = PlayerPrefs.GetInt("CurrentScore", 0);
 
         // Load or initialize ammo
-        if (currentLevel == 1)
-        {
+        // if (currentLevel == 1)
+        // {
             ammo[1] = 50;
             ammo[2] = 50;
             ammo[3] = 50;
-        }
-        else
-        {
-            ammo[1] = PlayerPrefs.GetInt("Ammo1", 50);
-            ammo[2] = PlayerPrefs.GetInt("Ammo2", 50);
-            ammo[3] = PlayerPrefs.GetInt("Ammo3", 50);
-        }
+        // }
+        // else
+        // {
+        //     ammo[1] = PlayerPrefs.GetInt("Ammo1", 50);
+        //     ammo[2] = PlayerPrefs.GetInt("Ammo2", 50);
+        //     ammo[3] = PlayerPrefs.GetInt("Ammo3", 50);
+        // }
 
         // Reset pause state
         Time.timeScale = 1f;
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
         if (levelOver) return;
 
         // Pause input
-        if (Keyboard.current.escapeKey.wasPressedThisFrame|| Keyboard.current.dKey.wasPressedThisFrame)
+        if (Keyboard.current.escapeKey.wasPressedThisFrame|| Keyboard.current.pKey.wasPressedThisFrame)
             TogglePause();
 
         if (Time.timeScale == 0) return; // Paused
@@ -145,7 +145,7 @@ public class GameManager : MonoBehaviour
         ammo1Text.text = $"S (1): {ammo[1]}";
         ammo2Text.text = $"D (2): {ammo[2]}";
         ammo3Text.text = $"F (3): {ammo[3]}";
-        cratesText.text = $"Crates: {(totalCratesForLevel - cratesDestroyedThisLevel)}/{totalCratesForLevel}";
+        cratesText.text = $"Crates: {totalCratesForLevel - cratesDestroyedThisLevel}/{totalCratesForLevel}";
     }
 
     // --- Gameplay Logic ---

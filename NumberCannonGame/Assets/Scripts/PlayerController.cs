@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,7 +15,12 @@ public class PlayerController : MonoBehaviour
         Vector3 cannonScreenPos = cam.WorldToScreenPoint(transform.position);
         Vector2 direction = mousePos - new Vector2(cannonScreenPos.x, cannonScreenPos.y);
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f); // rotate only Z axis
+
+        // Clamp the angle here
+        float clampedAngle = Mathf.Clamp(angle, 0f, 180f);
+
+        // Apply the rotation (rotate only around Z)
+        transform.rotation = Quaternion.Euler(0f, 0f, clampedAngle - 90f);
 
         // --- 2. Shooting ---
         if (Keyboard.current.sKey.wasPressedThisFrame)
@@ -35,6 +41,7 @@ public class PlayerController : MonoBehaviour
     {
         // Log the shoot event
         Debug.Log($"Shoot triggered with value {value} at time {Time.time:F2}");
+        Debug.Log($"Current Ammo: {GameManager.instance.ammo[value]}");
 
         // Check ammo
         if (GameManager.instance == null || !GameManager.instance.HasAmmo(value))

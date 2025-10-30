@@ -5,11 +5,11 @@ public class CrateController : MonoBehaviour
 {
     public int crateValue;
     public TextMeshPro valueText;
-    
+
     [Header("Bonus: Movement Variation")]
     public float fallSpeed = 2f;
-    public float horizontalSpeed = 3f; // Speed of sine wave
-    public float horizontalMagnitude = 0.5f; // Width of sine wave
+    public float horizontalSpeed = 3f;
+    public float horizontalMagnitude = 0.5f;
 
     private Rigidbody rb;
     private float originalX;
@@ -21,7 +21,6 @@ public class CrateController : MonoBehaviour
         UpdateText();
     }
 
-    // This is called by the CrateSpawner
     public void Initialize(int value, float speed)
     {
         crateValue = value;
@@ -31,50 +30,43 @@ public class CrateController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Basic falling
         Vector3 velocity = new Vector3(0, -fallSpeed, 0);
-
-        // Bonus: Add sinusoidal (wobble) movement
         float xOffset = Mathf.Sin(Time.time * horizontalSpeed) * horizontalMagnitude;
         velocity.x = (originalX + xOffset - transform.position.x) / Time.fixedDeltaTime;
-
         rb.linearVelocity = velocity;
     }
 
-    public void TakeDamage(int damage)
+    public bool TakeDamage(int damage)
     {
+        if (damage > crateValue)
+            return true; // Bullet destroyed, crate remains
+
         crateValue -= damage;
+        crateValue = Mathf.Max(crateValue, 0);
+
+        Debug.Log($"Crate hit! New value: {crateValue}");
         UpdateText();
 
-        if (crateValue == 0)
+        if (crateValue <= 0)
         {
-            // Success
             GameManager.instance.HandleCrateDestruction(true, transform.position);
             Destroy(gameObject);
         }
-        else if (crateValue < 0)
-        {
-            // Overshot
-            GameManager.instance.HandleCrateDestruction(false, transform.position);
-            Destroy(gameObject);
-        }
-        // If > 0, do nothing and let it keep falling
+
+        return true;
     }
 
     void UpdateText()
     {
         if (valueText != null)
-        {
             valueText.text = crateValue.ToString();
-        }
     }
 
-    // This handles hitting the bottom of the screen
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("BottomBoundary"))
+        if (other.CompareTag("BottomBoundary"))
         {
-            // Penalty for missing
+            Debug.Log("Crate hit bottom.");
             GameManager.instance.HandleCrateDestruction(false, transform.position);
             Destroy(gameObject);
         }
